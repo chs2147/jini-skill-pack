@@ -10,6 +10,7 @@
 | 스킬 | 파일 | 설명 |
 |------|------|------|
 | book-comparison | [`claude-skills/book-comparison.skill`](claude-skills/book-comparison.skill) | 비슷한 책 여러 권을 비교해 구매 목적에 맞는 One Pick 추천 |
+| travel-guidebook | [`claude-skills/travel-guidebook.skill`](claude-skills/travel-guidebook.skill) | 여행 일정을 일자별 탭·동선 지도·바우처 카드로 구성한 멀티챕터 HTML 가이드북 생성 |
 
 ---
 
@@ -52,6 +53,26 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
 4. 비교표(항목=행, 도서=열) 작성 + **One Pick** 추천
 5. 비교 대상이 3권 이상이면 엑셀 파일도 함께 제공
 
+### travel-guidebook
+
+여행 일정 정보를 공유 가능한 단일 HTML 파일로 만들어줍니다.
+
+**트리거 상황**
+- "여행 가이드북 만들어줘", "이 일정 정리해서 파일로 만들어줘" 같이 말할 때
+- 항공권·호텔 예약 확정 정보와 일자별 일정을 한 파일로 모으고 싶을 때
+- 기존 가이드북에 예약 변경(호텔·항공 변경, 일정 추가)을 반영할 때
+
+**스킬이 하는 일**
+1. 여행 일정 · 목적지 · 인원 · 예산 · 숙박/항공 예약 여부를 한 번에 확인
+2. 식당·장소 정보를 웹 검색으로 실제 검증 (영업시간·휴무 지어내지 않음)
+3. 아래 구조의 멀티챕터 HTML 파일 생성:
+   - **일정 탭** — 일자별 탭 네비게이션
+   - **동선 지도** — 일자별 개략도(스키매틱) + 전체 동선 한눈에 보기
+   - **미식 챕터** — 추천 식당·카페 카드
+   - **바우처 챕터** — 호텔/항공권 예약 확인 카드
+   - **공항 이동 챕터** — 공항 접근 수단 정리
+4. 목적지 분위기에 맞춰 매번 새로운 시각 테마 디자인 (템플릿 재탕 없음)
+
 ---
 
 ## 스킬 파일 구조
@@ -61,7 +82,13 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
 ```
 book-comparison.skill  (ZIP)
 └── book-comparison/
-    └── SKILL.md       ← 스킬 정의 (메타데이터 + 실행 지침)
+    └── SKILL.md            ← 스킬 정의 (메타데이터 + 실행 지침)
+
+travel-guidebook.skill  (ZIP)
+└── travel-guidebook/
+    ├── SKILL.md            ← 스킬 정의
+    └── scripts/
+        └── compute_route_map.py   ← 동선 지도 계산 헬퍼 스크립트
 ```
 
 `SKILL.md` 상단의 frontmatter에 `name`과 `description`을 정의하면
