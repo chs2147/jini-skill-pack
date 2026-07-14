@@ -1,5 +1,10 @@
 # jini-skill-pack
 
+![Skills](https://img.shields.io/badge/skills-3-blueviolet?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat-square&logo=anthropic)
+![Last Commit](https://img.shields.io/github/last-commit/chs2147/jini-skill-pack?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+
 개인용 Claude Code 커스텀 스킬 모음입니다.  
 직접 만들고 사용하는 스킬들을 `claude-skills/` 디렉토리에 관리합니다.
 
