@@ -11,6 +11,7 @@
 |------|------|------|
 | book-comparison | [`claude-skills/book-comparison.skill`](claude-skills/book-comparison.skill) | 비슷한 책 여러 권을 비교해 구매 목적에 맞는 One Pick 추천 |
 | travel-guidebook | [`claude-skills/travel-guidebook.skill`](claude-skills/travel-guidebook.skill) | 여행 일정을 일자별 탭·동선 지도·바우처 카드로 구성한 멀티챕터 HTML 가이드북 생성 |
+| dynamic-slide-builder | [`claude-skills/dynamic-slide-builder.skill`](claude-skills/dynamic-slide-builder.skill) | 첨부 문서(pptx·pdf·docx·md 등)를 트랜지션 애니메이션이 있는 HTML 슬라이드 덱으로 변환 |
 
 ---
 
@@ -73,6 +74,24 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
    - **공항 이동 챕터** — 공항 접근 수단 정리
 4. 목적지 분위기에 맞춰 매번 새로운 시각 테마 디자인 (템플릿 재탕 없음)
 
+### dynamic-slide-builder
+
+첨부된 문서를 좌우 또는 상하로 넘어가는 HTML 슬라이드 덱으로 만들어줍니다.
+
+**트리거 상황**
+- 문서를 첨부하며 "슬라이드로 만들어줘", "HTML 슬라이드", "역동적인 슬라이드", "웹으로 넘겨볼 수 있게" 등을 말할 때
+- pptx/pdf를 단순히 여는 게 아니라 인터랙티브 슬라이드로 새로 만들고 싶을 때
+- 문서 첨부 없이 "슬라이드 만들어줘"라고만 해도 트리거해 문서 첨부를 먼저 요청
+
+**스킬이 하는 일**
+1. 첨부 문서 확인 (pptx·pdf·docx·txt·md·html 모두 지원)
+2. 문서 유형에 따라 분기:
+   - **기존 슬라이드/페이지 디자인 있음** (pptx·pdf·html) → 원문 내용·디자인 유지 여부 확인 후 진행
+   - **텍스트 중심 문서** (docx·txt·md) → 슬라이드 구성안을 채팅에 먼저 보여주고 확인받은 뒤 제작
+3. 전환 스타일 선택: **좌우 스크롤** 또는 **상하 스크롤** (휠·키보드·스와이프 지원, JS 기반 1장씩 전환)
+4. 새 디자인 적용 시 커버 페이지 시안 3개 제안 → 확정 후 전체 제작
+5. 단일 `.html` 파일로 출력 (외부 리소스 의존 없음, 공유 즉시 가능)
+
 ---
 
 ## 스킬 파일 구조
@@ -89,6 +108,15 @@ travel-guidebook.skill  (ZIP)
     ├── SKILL.md            ← 스킬 정의
     └── scripts/
         └── compute_route_map.py   ← 동선 지도 계산 헬퍼 스크립트
+
+dynamic-slide-builder.skill  (ZIP)
+└── dynamic-slide-builder/
+    ├── SKILL.md            ← 스킬 정의
+    ├── references/
+    │   └── design-concepts.md     ← 디자인 컨셉 레퍼런스
+    └── assets/
+        ├── horizontal-scroll-template.html  ← 좌우 스크롤 베이스 템플릿
+        └── vertical-scroll-template.html    ← 상하 스크롤 베이스 템플릿
 ```
 
 `SKILL.md` 상단의 frontmatter에 `name`과 `description`을 정의하면
