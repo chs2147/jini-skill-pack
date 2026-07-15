@@ -98,8 +98,8 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
 5. 단일 `.html` 파일로 출력 (외부 리소스 의존 없음, 공유 즉시 가능)
 
 **예시 산출물** — [`claude-skills/sample-dynamic-slide-builder/`](claude-skills/sample-dynamic-slide-builder)
-- [onboarding-guide-slides.html](claude-skills/sample-dynamic-slide-builder/onboarding-guide-slides.html) — 신규 입사자 온보딩 가이드
-- [rtx5070-upgrade-slides-v4.html](claude-skills/sample-dynamic-slide-builder/rtx5070-upgrade-slides-v4.html) — RTX 5070 업그레이드 & 5K2K 최적화 가이드
+- [onboarding-guide-slides.html](claude-skills/sample-dynamic-slide-builder/onboarding-guide-slides.html) / [v2](claude-skills/sample-dynamic-slide-builder/onboarding-guide-slides-v2.html) — 신규 입사자 온보딩 가이드
+- [rtx5070-upgrade-slides-final.html](claude-skills/sample-dynamic-slide-builder/rtx5070-upgrade-slides-final.html) — RTX 5070 업그레이드 & 5K2K 최적화 가이드
 
 각 파일을 다운로드해 브라우저로 열면 스킬 사용 시 실제로 어떤 결과물이 나오는지 바로 확인할 수 있습니다.
 

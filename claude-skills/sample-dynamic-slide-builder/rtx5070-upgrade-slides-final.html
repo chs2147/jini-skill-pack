@@ -34,8 +34,9 @@
     --font-title: 'NexonLv2Gothic', 'Spoqa Han Sans Neo', sans-serif;
     --font-code: 'D2Coding', monospace;
     --transition-duration: 0.7s;
-    --radius: 3px; /* 각진 모서리 — Tech Dark Mode는 sharp corner */
-    --gutter: 30px; /* 보더 박스와 화면 가장자리 사이 여백 (15~30px 규칙) */
+    --radius: 20px; /* 둥근 모서리 */
+    --gutter: 50px;
+    --footer-h: 40px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -48,25 +49,25 @@
     overflow: hidden;
   }
 
-  /* 9:16 세로 비율 고정 — 보더 박스 바깥에 --gutter 만큼 여백을 둔다 */
   #deck {
     position: relative;
-    width: 100vw; height: 100vh;
+    width: 100vw; height: calc(100vh - var(--footer-h));
     padding: var(--gutter);
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .stage {
     position: relative;
     aspect-ratio: 9 / 16;
-    width: min(calc(100vw - 2 * var(--gutter)), calc((100vh - 2 * var(--gutter)) * 9 / 16));
-    height: min(calc(100vh - 2 * var(--gutter)), calc((100vw - 2 * var(--gutter)) * 16 / 9));
+    width: min(calc(100vw - 2 * var(--gutter)), calc((100vh - var(--footer-h) - 2 * var(--gutter)) * 9 / 16));
+    height: min(calc(100vh - var(--footer-h) - 2 * var(--gutter)), calc((100vw - 2 * var(--gutter)) * 16 / 9));
     background: var(--bg);
-    border: 1px solid var(--line);
+    border: 1px solid var(--accent);
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: 0 0 0 1px rgba(57,245,196,0.08), 0 24px 70px rgba(0,0,0,0.55);
+    box-shadow: 0 0 0 1px rgba(57,245,196,0.1), 0 0 30px rgba(57,245,196,0.08), 0 24px 70px rgba(0,0,0,0.55);
   }
 
   .slide {
@@ -75,15 +76,14 @@
     width: 100%; height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 콘텐츠 페이지는 항상 위에서부터 — 소제목 위치 고정 */
+    justify-content: flex-start; /* 콘텐츠 페이지는 항상 위에서부터 */
     padding: 7% 8%;
-    overflow-y: auto;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-duration) ease;
   }
-  /* 표지/목차/챕터처럼 상세 내용이 없는 페이지는 자유 정렬(중앙) 유지 */
-  .slide.free { justify-content: center; }
+  .slide.free { justify-content: center; } /* 표지만 자유(중앙) 정렬 */
   .slide.active { opacity: 1; pointer-events: auto; z-index: 2; }
 
   .reveal {
@@ -117,14 +117,14 @@
     font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
     color: var(--page-bg);
     background: var(--accent);
-    padding: 5px 12px; border-radius: var(--radius);
+    padding: 5px 12px; border-radius: 999px;
     margin-bottom: 1rem; width: fit-content;
   }
 
   .card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border-radius: 12px;
     border-left: 3px solid var(--accent);
     padding: 1.05rem 1.15rem;
     margin-bottom: 0.8rem;
@@ -134,10 +134,7 @@
   .card .label { font-size: 0.8rem; color: var(--sub); font-weight: 700; letter-spacing: 0.04em; margin-bottom: 0.35rem; text-transform: uppercase; }
   .card p { font-size: 0.98rem; line-height: 1.6; color: var(--ink); opacity: 0.95; }
 
-  .kv {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 0.6rem;
-  }
+  .kv { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; }
   .kv span:first-child { font-size: 0.95rem; }
 
   ul.plain { list-style: none; position: relative; z-index: 1; }
@@ -146,17 +143,15 @@
     padding-left: 1.4rem; position: relative; margin-bottom: 0.75rem;
     color: var(--ink); opacity: 0.95;
   }
-  ul.plain li::before {
-    content: '▹'; position: absolute; left: 0; color: var(--accent);
-  }
+  ul.plain li::before { content: '▹'; position: absolute; left: 0; color: var(--accent); }
 
-  code, .kbd {
+  code {
     font-family: var(--font-code);
     background: rgba(57,245,196,0.1);
     color: var(--accent);
     border: 1px solid var(--line);
     padding: 3px 9px;
-    border-radius: var(--radius);
+    border-radius: 6px;
     font-size: 0.88rem;
     white-space: nowrap;
   }
@@ -165,7 +160,7 @@
 
   #indicator {
     position: fixed; right: calc(var(--gutter) / 2);
-    top: 50%; transform: translateY(-50%);
+    top: calc(50% - var(--footer-h) / 2); transform: translateY(-50%);
     display: flex; flex-direction: column; gap: 9px; z-index: 100;
   }
   #indicator .dot {
@@ -175,18 +170,14 @@
   }
   #indicator .dot.active { opacity: 1; background: var(--accent); transform: scale(1.3); }
 
-  /* 화살표는 보더 박스 바깥, --gutter 여백 밴드 정중앙에 배치한다 —
-     콘텐츠가 아니라 내비게이션이라는 것을 시각적으로 분리하기 위함.
-     상/하 화살표를 동일한 모양(CSS로 그린 코너를 회전)으로 통일해서
-     유니코드 글리프별 렌더링 차이가 나지 않게 한다. */
   .nav-arrow {
     position: fixed; left: 50%; transform: translateX(-50%);
     width: 22px; height: 22px;
     display: flex; align-items: center; justify-content: center;
     background: none; border: none; color: var(--ink);
-    opacity: 0.35; cursor: pointer; z-index: 100; transition: opacity 0.2s ease;
+    opacity: 0.4; cursor: pointer; z-index: 100; transition: opacity 0.2s ease;
   }
-  .nav-arrow:hover { opacity: 0.85; }
+  .nav-arrow:hover { opacity: 0.9; }
   .nav-arrow::before {
     content: '';
     display: block;
@@ -197,7 +188,47 @@
   .nav-arrow.up::before { transform: rotate(-45deg); }
   .nav-arrow.down::before { transform: rotate(135deg); }
   #prev-arrow { top: calc(var(--gutter) / 2 - 11px); }
-  #next-arrow { bottom: calc(var(--gutter) / 2 - 11px); }
+  #next-arrow { bottom: calc(var(--footer-h) + var(--gutter) / 2 - 11px); }
+
+  /* 하단 푸터 바 */
+  #page-footer {
+    position: fixed; left: 0; bottom: 0;
+    width: 100vw; height: var(--footer-h);
+    background: var(--page-bg);
+    border-top: 1px solid var(--line);
+    z-index: 200;
+    box-sizing: border-box;
+  }
+  #page-footer .footer-credit {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7rem;
+    color: var(--ink);
+    opacity: 0.55;
+    white-space: nowrap;
+  }
+  #fullscreen-btn {
+    position: absolute; right: var(--gutter); top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; padding: 0;
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  #fullscreen-btn svg { display: block; width: 16px; height: 16px; }
+  #exit-fullscreen-btn {
+    position: fixed; right: var(--gutter); bottom: 16px;
+    z-index: 200;
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    color: var(--accent);
+    cursor: pointer;
+    opacity: 0.9;
+  }
 </style>
 </head>
 <body>
@@ -205,7 +236,7 @@
 <div id="deck">
 <div class="stage" id="stage">
 
-  <!-- 1. 표지 -->
+  <!-- 1. 표지 (free) -->
   <section class="slide free active" id="s1" style="align-items:center; text-align:center;">
     <div class="reveal" style="font-size:2.6rem;">🖥️</div>
     <h1 class="reveal" style="margin-top:1rem;">RTX 5070<br>업그레이드 & 5K2K<br>최적화 가이드</h1>
@@ -347,6 +378,16 @@
 <button class="nav-arrow down" id="next-arrow" aria-label="다음 슬라이드"></button>
 <div id="indicator"></div>
 
+<div id="page-footer">
+  <span class="footer-credit">This document is made by dynamic slide builder skill which powered by SanbonJINI.</span>
+  <button id="fullscreen-btn" aria-label="전체화면">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+    </svg>
+  </button>
+</div>
+<button id="exit-fullscreen-btn">이전 화면으로</button>
+
 <script>
 (function() {
   const slides = Array.from(document.querySelectorAll('.slide'));
@@ -416,6 +457,18 @@
 
   slides[0].classList.add('in-view');
   updateIndicator();
+
+  // 전체화면
+  var footer = document.getElementById('page-footer');
+  var fsBtn = document.getElementById('fullscreen-btn');
+  var exitBtn = document.getElementById('exit-fullscreen-btn');
+  fsBtn.addEventListener('click', function() { document.documentElement.requestFullscreen(); });
+  exitBtn.addEventListener('click', function() { if (document.fullscreenElement) document.exitFullscreen(); });
+  document.addEventListener('fullscreenchange', function() {
+    var isFs = !!document.fullscreenElement;
+    footer.style.display = isFs ? 'none' : 'block';
+    exitBtn.style.display = isFs ? 'block' : 'none';
+  });
 })();
 </script>
 
