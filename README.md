@@ -1,6 +1,6 @@
 # jini-skill-pack
 
-![Skills](https://img.shields.io/badge/skills-3-blueviolet?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-4-blueviolet?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat-square&logo=anthropic)
 ![Last Commit](https://img.shields.io/github/last-commit/chs2147/jini-skill-pack?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
@@ -17,6 +17,7 @@
 | book-comparison | [`claude-skills/book-comparison.skill`](claude-skills/book-comparison.skill) | 비슷한 책 여러 권을 비교해 구매 목적에 맞는 One Pick 추천 |
 | travel-guidebook | [`claude-skills/travel-guidebook.skill`](claude-skills/travel-guidebook.skill) | 여행 일정을 일자별 탭·동선 지도·바우처 카드로 구성한 멀티챕터 HTML 가이드북 생성 |
 | dynamic-slide-builder | [`claude-skills/dynamic-slide-builder.skill`](claude-skills/dynamic-slide-builder.skill) | 첨부 문서(pptx·pdf·docx·md 등)를 트랜지션 애니메이션이 있는 HTML 슬라이드 덱으로 변환 |
+| pycapcut | [`claude-skills/pycapcut.skill`](claude-skills/pycapcut.skill) | pyCapCut으로 macOS CapCut 프로젝트를 자동 생성·안전하게 패치(자막·전환·음악·손떨림 보정 등) |
 
 ---
 
@@ -103,6 +104,23 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
 
 각 파일을 다운로드해 브라우저로 열면 스킬 사용 시 실제로 어떤 결과물이 나오는지 바로 확인할 수 있습니다.
 
+### pycapcut
+
+pyCapCut 라이브러리로 macOS CapCut 프로젝트(`draft_content.json`/`draft_info.json`)를 코드로 생성·수정합니다.
+
+**트리거 상황**
+- 원본 영상들을 자동으로 선별·편집해 CapCut 프로젝트로 만들고 싶을 때
+- 이미 CapCut 앱에서 직접 손으로 편집한 기존 드래프트에 자막·전환·음악·회전/파노라마 하이라이트·원본음소거 등을 추가하고 싶을 때
+- "드래프트가 안 열려요", "File not accessible", "Link media 팝업이 계속 떠요", "세로 영상이 레터박스로 나와요", "편집한 내용이 사라졌어요" 같은 CapCut 관련 버그를 겪을 때
+- pyCapCut, jianying/剪映 드래프트, `.lveditor.draft` 프로젝트를 언급할 때
+
+**스킬이 하는 일**
+1. **Phase 판별** — 아직 손대지 않은 순정 드래프트(Phase 0)인지, 사람이 이미 CapCut 앱에서 편집한 드래프트(Phase 1)인지 `has_user_edited()`로 먼저 확인
+2. **Phase 0** — pyCapCut 객체 모델(`ScriptFile`, `VideoSegment` 등)로 새 드래프트를 처음부터 생성
+3. **Phase 1** — 객체 모델로 재생성하지 않고 드래프트 JSON을 안전하게 직접 패치해 기존 편집 내용 보존
+4. 소스 미디어를 `~/Movies` 하위로 위치시키는 등 macOS 샌드박스 제약을 사전에 점검
+5. CapCut 앱 실행 중 저장 시 자동저장과 경합해 편집 내용이 유실되는 문제를 피하도록 안내
+
 ---
 
 ## 스킬 파일 구조
@@ -128,6 +146,19 @@ dynamic-slide-builder.skill  (ZIP)
     └── assets/
         ├── horizontal-scroll-template.html  ← 좌우 스크롤 베이스 템플릿
         └── vertical-scroll-template.html    ← 상하 스크롤 베이스 템플릿
+
+pycapcut.skill  (ZIP)
+└── pycapcut/
+    ├── SKILL.md            ← 스킬 정의
+    ├── references/
+    │   ├── mac-compatibility.md   ← macOS 샌드박스/경로 호환성 노트
+    │   ├── tuning-knobs.md        ← 편집 파라미터 튜닝 가이드
+    │   ├── window-mining.md       ← 원본 영상 후보 구간 채굴 로직
+    │   └── vision-scoring.md      ← 구간 스코어링(비전 기반) 로직
+    └── scripts/
+        ├── safe_patch.py       ← 기존 드래프트 JSON 안전 패치 헬퍼
+        ├── capcut_paths.py     ← 드래프트 경로/Phase 판별 유틸
+        └── vertical_scale.py   ← 세로 영상 레터박스 보정 스크립트
 ```
 
 `SKILL.md` 상단의 frontmatter에 `name`과 `description`을 정의하면
