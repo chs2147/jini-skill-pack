@@ -1,6 +1,6 @@
 # jini-skill-pack
 
-![Skills](https://img.shields.io/badge/skills-4-blueviolet?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-9-blueviolet?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat-square&logo=anthropic)
 ![Last Commit](https://img.shields.io/github/last-commit/chs2147/jini-skill-pack?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
@@ -18,6 +18,11 @@
 | travel-guidebook | [`claude-skills/travel-guidebook.skill`](claude-skills/travel-guidebook.skill) | 여행 일정을 일자별 탭·동선 지도·바우처 카드로 구성한 멀티챕터 HTML 가이드북 생성 |
 | dynamic-slide-builder | [`claude-skills/dynamic-slide-builder.skill`](claude-skills/dynamic-slide-builder.skill) | 첨부 문서(pptx·pdf·docx·md 등)를 트랜지션 애니메이션이 있는 HTML 슬라이드 덱으로 변환 |
 | pycapcut | [`claude-skills/pycapcut.skill`](claude-skills/pycapcut.skill) | pyCapCut으로 macOS CapCut 프로젝트를 자동 생성·안전하게 패치(자막·전환·음악·손떨림 보정 등) |
+| mixpanel-requirement-writer | [`claude-skills/mixpanel-requirement-writer.skill`](claude-skills/mixpanel-requirement-writer.skill) | ThinQ Pro 스타일 제품의 Mixpanel 데이터 수집 요구사항/이벤트 트래킹 시나리오를 작성·개선 |
+| pptx-change-history | [`claude-skills/pptx-change-history.skill`](claude-skills/pptx-change-history.skill) | 슬라이드 우측 상단에 겹쳐 쌓인 날짜별 변경이력 카드를 모두 추출해 변경이력 테이블로 정리 |
+| prd-description-summary | [`claude-skills/prd-description-summary.skill`](claude-skills/prd-description-summary.skill) | ThinQ Pro 기획안(pptx)·대화 컨텍스트 기반으로 PRD description용 핵심구조/주요화면/정책포인트 3단 요약 생성 |
+| thinq-pro-report-builder | [`claude-skills/thinq-pro-report-builder.skill`](claude-skills/thinq-pro-report-builder.skill) | LG Smart UI 2.0 가이드라인을 적용해 회의록·기획 내용을 서면보고/미팅논의/유관부서검토용 HTML 보고서로 생성 |
+| thinq-pro-req-review | [`claude-skills/thinq-pro-req-review.skill`](claude-skills/thinq-pro-req-review.skill) | ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 스파이더 그래프·비교 분석 레포트 생성 |
 
 ---
 
@@ -104,6 +109,72 @@ cp claude-skills/book-comparison.skill ~/.claude/skills/
 
 각 파일을 다운로드해 브라우저로 열면 스킬 사용 시 실제로 어떤 결과물이 나오는지 바로 확인할 수 있습니다.
 
+### mixpanel-requirement-writer
+
+ThinQ Pro 스타일 제품의 Mixpanel 데이터 수집 요구사항 시나리오를 작성/개선합니다.
+
+**트리거 상황**
+- "요구사항 작성해줘", "시나리오 새로 정의해줘", "이 문서 개선해줘" 등을 Mixpanel/데이터 수집 맥락에서 말할 때
+
+**스킬이 하는 일**
+1. 처음부터 새로 작성할지, 기존 요구사항을 개선/재정의할지 모드 확인
+2. 데이터 수집 범위·분석 가설·트리거·수집 데이터 형식을 대화로 확인
+3. 결과를 마크다운 표로 채팅창에 미리보기 (엑셀 파일에 직접 쓰지 않음, 사용자가 직접 복사)
+
+### pptx-change-history
+
+PPTX 슬라이드 우측 상단에 겹쳐 쌓인 "날짜 + 변경이력" 카드를 모두 취합해 변경이력 테이블로 정리합니다.
+
+**트리거 상황**
+- "변경이력 정리해줘", "슬라이드 변경이력 취합", "changelog 테이블 만들어줘" 등을 pptx/ppt 파일과 함께 말할 때
+- 화면에는 최신 카드만 보이고 이전 카드는 뒤에 가려진 문서(예: LG ThinQ Pro 기획 슬라이드)에서 특히 유용
+
+**스킬이 하는 일**
+1. 정리 범위(전체 기간 / 특정일 / 특정 기간)를 먼저 확인
+2. PPTX 내부 도형 좌표를 이용해 화면에 보이지 않는 카드까지 전부 추출
+3. 날짜 | 페이지/제목 | 변경 내용 형태의 변경이력 테이블을 채팅창에 생성
+
+### prd-description-summary
+
+ThinQ Pro 기획안(pptx)이나 대화 컨텍스트를 기반으로 PRD description에 그대로 옮겨 쓸 3단 요약을 만듭니다.
+
+**트리거 상황**
+- 기획안 pptx를 첨부하며 "PRD용으로 요약해줘"라고 할 때
+- 첨부 없이 "지금까지 논의/확정된 내용 기준으로 PRD description 정리해줘"라고 할 때
+- 기획안이 v0.9 → v0.91 → rev1 등으로 버전업될 때마다 반복 요청되는 워크플로우
+
+**스킬이 하는 일**
+1. pptx 첨부 시 전체 슬라이드 텍스트 추출, 변경이력 카드가 있으면 최신 개정 내용을 최종 기준으로 삼고 `deprecated` 표시 슬라이드는 제외
+2. 대화 컨텍스트만 있을 경우 사용자가 명시적으로 확정한 내용만 반영 (검토 중인 옵션은 제외)
+3. **핵심 구조 / 주요 화면 / 핵심 정책 포인트** 3개 섹션을 볼드 텍스트 + 구분선(`---`)으로 채팅창에 작성
+
+### thinq-pro-report-builder
+
+ThinQ Pro 관련 회의록·기획 내용을 LG Smart UI 2.0 디자인 가이드라인이 적용된 보고서형 HTML 문서로 만듭니다.
+
+**트리거 상황**
+- "보고서로 만들어줘", "서면보고용 문서로 정리해줘", "미팅 논의 자료로 만들어줘", "유관부서 검토용 자료로 정리해줘" 등을 말할 때
+
+**스킬이 하는 일**
+1. 문서 목적(서면보고용 / 미팅논의용 / 유관부서검토용)과 포맷(가로형 / 세로형)을 먼저 확인
+2. 목적별로 축약 수준을 다르게 적용 (서면보고용은 핵심 축약, 미팅논의·유관부서검토용은 원문 그대로)
+3. Warm Beige 배경 + White 카드, ThinQ Blue 포인트 컬러 등 LG Smart UI 2.0 디자인 토큰 적용
+4. 도입부에 Executive Summary 섹션 추가, 첨부 이미지는 모두 포함
+5. 결과 HTML 우측 하단에 텍스트를 바로 고칠 수 있는 플로팅 "수정 모드" 버튼 포함
+
+### thinq-pro-req-review
+
+ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 구조화된 레포트를 생성합니다.
+
+**트리거 상황**
+- "요구사항 분석해줘", "RQ 프레임워크로 검토", "스파이더 그래프로 비교", "우선순위 정리", "백로그 검토" 등을 말할 때
+- Backlog ID(TPRDM-xxxx), 요구사항 설명, 북미/국내 VOC 등 어떤 형식의 입력이든 처리
+
+**스킬이 하는 일**
+1. 요구사항 1건이면 개별 RQ 레포트(템플릿 적용 + 스파이더 그래프 + 추상화 구조) 생성
+2. 요구사항이 여러 건이면 다차원 비교 분석 레포트 추가 생성
+3. ThinQ Pro 사업 방향 3가지(운영비용 효율화 / Tenant 확보·유지 / 플랫폼 차별화) 기준으로 적합도 스코어링 및 최종 권고
+
 ### pycapcut
 
 pyCapCut 라이브러리로 macOS CapCut 프로젝트(`draft_content.json`/`draft_info.json`)를 코드로 생성·수정합니다.
@@ -146,6 +217,34 @@ dynamic-slide-builder.skill  (ZIP)
     └── assets/
         ├── horizontal-scroll-template.html  ← 좌우 스크롤 베이스 템플릿
         └── vertical-scroll-template.html    ← 상하 스크롤 베이스 템플릿
+
+mixpanel-requirement-writer.skill  (ZIP)
+└── mixpanel-requirement-writer/
+    ├── SKILL.md            ← 스킬 정의
+    └── references/
+        └── example-installer-app.md   ← 작성 예시 레퍼런스
+
+pptx-change-history.skill  (ZIP)
+└── pptx-change-history/
+    ├── SKILL.md            ← 스킬 정의
+    └── scripts/
+        └── extract_change_history.py   ← 겹쳐진 변경이력 카드 추출 스크립트
+
+prd-description-summary.skill  (ZIP)
+└── prd-description-summary/
+    └── SKILL.md            ← 스킬 정의
+
+thinq-pro-report-builder.skill  (ZIP)
+└── thinq-pro-report-builder/
+    ├── SKILL.md            ← 스킬 정의
+    ├── references/
+    │   └── design-guideline.md    ← LG Smart UI 2.0 디자인 가이드라인
+    └── assets/
+        └── edit-mode-snippet.html      ← 플로팅 "수정 모드" 버튼 스니펫
+
+thinq-pro-req-review.skill  (ZIP)
+└── thinq-pro-req-review/
+    └── SKILL.md            ← 스킬 정의
 
 pycapcut.skill  (ZIP)
 └── pycapcut/
