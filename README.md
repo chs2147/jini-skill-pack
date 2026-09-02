@@ -1,6 +1,6 @@
 # jini-skill-pack
 
-![Skills](https://img.shields.io/badge/skills-9-blueviolet?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-10-blueviolet?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat-square&logo=anthropic)
 ![Last Commit](https://img.shields.io/github/last-commit/chs2147/jini-skill-pack?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
@@ -23,6 +23,7 @@
 | prd-description-summary | [`claude-skills/prd-description-summary.skill`](claude-skills/prd-description-summary.skill) | ThinQ Pro 기획안(pptx)·대화 컨텍스트 기반으로 PRD description용 핵심구조/주요화면/정책포인트 3단 요약 생성 |
 | thinq-pro-report-builder | [`claude-skills/thinq-pro-report-builder.skill`](claude-skills/thinq-pro-report-builder.skill) | LG Smart UI 2.0 가이드라인을 적용해 회의록·기획 내용을 서면보고/미팅논의/유관부서검토용 HTML 보고서로 생성 |
 | thinq-pro-req-review | [`claude-skills/thinq-pro-req-review.skill`](claude-skills/thinq-pro-req-review.skill) | ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 스파이더 그래프·비교 분석 레포트 생성 |
+| ux-scenario-screen-extractor | [`claude-skills/ux-scenario-screen-extractor.skill`](claude-skills/ux-scenario-screen-extractor.skill) | UX 시나리오 문서의 화면 목업 위 annotation(화살표·번호 표식 등)을 제거하고 원본 화면만 무손실로 추출 |
 
 ---
 
@@ -175,6 +176,21 @@ ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 구조화된 레포트
 2. 요구사항이 여러 건이면 다차원 비교 분석 레포트 추가 생성
 3. ThinQ Pro 사업 방향 3가지(운영비용 효율화 / Tenant 확보·유지 / 플랫폼 차별화) 기준으로 적합도 스코어링 및 최종 권고
 
+### ux-scenario-screen-extractor
+
+UX 시나리오/기획 문서에 있는 화면 목업 위의 annotation(화살표·콜아웃·번호 표식·강조 박스)을 제거하고, 원본 화면 이미지만 다른 문서에 바로 쓸 수 있게 추출합니다.
+
+**트리거 상황**
+- "이 시나리오에서 화면만 뽑아줘", "annotation 없는 원본 화면 캡처해줘", "깨끗한 UI 스크린샷으로 만들어줘" 등을 말할 때
+- UX 시나리오/기획 슬라이드를 첨부하며 다른 문서(보고서, 가이드)에 재사용할 화면 이미지가 필요하다고 할 때
+
+**스킬이 하는 일**
+1. 최종 결과물 형태(이미지 저장 / HTML 문서)를 먼저 확인
+2. PPTX라면 도형 트리를 순회해 Picture(그림) 타입 도형만 원본 바이트 그대로 추출 — 화살표·텍스트박스·번호 뱃지 같은 annotation 도형은 애초에 Picture가 아니므로 자동으로 제외되며, 화면 목업 픽셀은 전혀 건드리지 않음(무손실)
+3. 아이콘/로고 등 작은 그림은 슬라이드 크기 대비 임계값(기본 25%)으로 걸러냄
+4. PDF나 평평하게 합쳐진 이미지처럼 화면과 annotation을 구조적으로 분리할 수 없는 경우, 픽셀 편집으로 임의 제거하지 않고 원본 PPTX 소스가 있는지 먼저 확인
+5. 선택에 따라 추출된 이미지를 그대로 전달하거나, 원본 해상도를 유지한 HTML 갤러리 페이지로 구성
+
 ### pycapcut
 
 pyCapCut 라이브러리로 macOS CapCut 프로젝트(`draft_content.json`/`draft_info.json`)를 코드로 생성·수정합니다.
@@ -245,6 +261,12 @@ thinq-pro-report-builder.skill  (ZIP)
 thinq-pro-req-review.skill  (ZIP)
 └── thinq-pro-req-review/
     └── SKILL.md            ← 스킬 정의
+
+ux-scenario-screen-extractor.skill  (ZIP)
+└── ux-scenario-screen-extractor/
+    ├── SKILL.md            ← 스킬 정의
+    └── scripts/
+        └── extract_screens_from_pptx.py   ← PPTX 도형 트리에서 Picture만 무손실 추출하는 스크립트
 
 pycapcut.skill  (ZIP)
 └── pycapcut/
