@@ -23,7 +23,7 @@
 | prd-description-summary | [`claude-skills/prd-description-summary.skill`](claude-skills/prd-description-summary.skill) | ThinQ Pro 기획안(pptx)·대화 컨텍스트 기반으로 PRD description용 핵심구조/주요화면/정책포인트 3단 요약 생성 |
 | thinq-pro-report-builder | [`claude-skills/thinq-pro-report-builder.skill`](claude-skills/thinq-pro-report-builder.skill) | LG Smart UI 2.0 가이드라인을 적용해 회의록·기획 내용을 서면보고/미팅논의/유관부서검토용 HTML 보고서로 생성 |
 | thinq-pro-req-review | [`claude-skills/thinq-pro-req-review.skill`](claude-skills/thinq-pro-req-review.skill) | ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 스파이더 그래프·비교 분석 레포트 생성 |
-| ux-scenario-screen-extractor | [`claude-skills/ux-scenario-screen-extractor.skill`](claude-skills/ux-scenario-screen-extractor.skill) | UX 시나리오 문서의 화면 목업 위 annotation(화살표·번호 표식 등)을 제거하고 원본 화면만 무손실로 추출 |
+| ux-scenario-screen-extractor | [`claude-skills/ux-scenario-screen-extractor.skill`](claude-skills/ux-scenario-screen-extractor.skill) | UX 시나리오 캡처 이미지/PDF에서 annotation(화살표·번호 표식 등)을 크롭으로 무손실 제거하고 원본 화면만 추출 |
 
 ---
 
@@ -178,17 +178,17 @@ ThinQ Pro 요구사항을 RQ 프레임워크로 분석해 구조화된 레포트
 
 ### ux-scenario-screen-extractor
 
-UX 시나리오/기획 문서에 있는 화면 목업 위의 annotation(화살표·콜아웃·번호 표식·강조 박스)을 제거하고, 원본 화면 이미지만 다른 문서에 바로 쓸 수 있게 추출합니다.
+UX 시나리오/기획 문서에 있는 화면 목업 위의 annotation(화살표·콜아웃·번호 표식·강조 박스)을 최대한 제거하고, 원본 화면 이미지만 다른 문서에 바로 쓸 수 있게 추출합니다. 실제로 첨부되는 파일은 거의 항상 캡처 이미지나 PDF(= annotation이 이미 화면에 평평하게 합성된 상태)라는 점을 전제로 설계했습니다.
 
 **트리거 상황**
 - "이 시나리오에서 화면만 뽑아줘", "annotation 없는 원본 화면 캡처해줘", "깨끗한 UI 스크린샷으로 만들어줘" 등을 말할 때
-- UX 시나리오/기획 슬라이드를 첨부하며 다른 문서(보고서, 가이드)에 재사용할 화면 이미지가 필요하다고 할 때
+- annotation이 그려진 UX 시나리오 캡처/PDF를 첨부하며 다른 문서(보고서, 가이드)에 재사용할 화면 이미지가 필요하다고 할 때
 
 **스킬이 하는 일**
 1. 최종 결과물 형태(이미지 저장 / HTML 문서)를 먼저 확인
-2. PPTX라면 도형 트리를 순회해 Picture(그림) 타입 도형만 원본 바이트 그대로 추출 — 화살표·텍스트박스·번호 뱃지 같은 annotation 도형은 애초에 Picture가 아니므로 자동으로 제외되며, 화면 목업 픽셀은 전혀 건드리지 않음(무손실)
-3. 아이콘/로고 등 작은 그림은 슬라이드 크기 대비 임계값(기본 25%)으로 걸러냄
-4. PDF나 평평하게 합쳐진 이미지처럼 화면과 annotation을 구조적으로 분리할 수 없는 경우, 픽셀 편집으로 임의 제거하지 않고 원본 PPTX 소스가 있는지 먼저 확인
+2. **(기본 경로)** PDF는 `pdf_pages_to_images.py`로 먼저 PNG 렌더링 → 실제 UI 화면의 경계를 시각적으로 파악해 `crop_image.py`로 그 바깥의 번호 뱃지·리더 라인·콜아웃을 잘라냄 (크롭은 픽셀을 다시 그리지 않으므로 남는 영역은 원본과 완전히 동일한 무손실 결과)
+3. UI 영역 **안쪽**에 직접 겹쳐진 annotation(강조 박스, 색이 덮인 배너 등)은 크롭으로 제거되지 않으므로 인페인팅 등 픽셀 편집으로 임의 제거하지 않고, 무엇이 남았는지 사용자에게 알림 — 완전 제거가 필요하면 편집 가능한 원본(PPTX 등) 확인
+4. **(부가 경로)** 드물게 원본이 PPTX라면 도형 트리에서 Picture 타입만 원본 바이트 그대로 추출 (annotation 도형은 애초에 대상이 아니므로 완전 제거됨)
 5. 선택에 따라 추출된 이미지를 그대로 전달하거나, 원본 해상도를 유지한 HTML 갤러리 페이지로 구성
 
 ### pycapcut
@@ -266,7 +266,9 @@ ux-scenario-screen-extractor.skill  (ZIP)
 └── ux-scenario-screen-extractor/
     ├── SKILL.md            ← 스킬 정의
     └── scripts/
-        └── extract_screens_from_pptx.py   ← PPTX 도형 트리에서 Picture만 무손실 추출하는 스크립트
+        ├── pdf_pages_to_images.py       ← PDF 페이지를 PNG로 렌더링(PyMuPDF, poppler 불필요)
+        ├── crop_image.py                ← 지정 좌표로 이미지를 무손실 크롭(annotation 제거 핵심 도구)
+        └── extract_screens_from_pptx.py ← (부가 경로) PPTX 도형 트리에서 Picture만 무손실 추출
 
 pycapcut.skill  (ZIP)
 └── pycapcut/
